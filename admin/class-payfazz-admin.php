@@ -175,6 +175,16 @@ class Payfazz_Admin {
 	public function register_payfazz_custom_fields_api() {
 		register_rest_field(
 			'payfazz',
+			'featured_image_src',
+			array(
+				'get_callback' => array( $this, 'get_featured_image_src' ),
+				'update_callback' => null,
+				'schema' => null,
+			)
+		);
+
+		register_rest_field(
+			'payfazz',
 			'_payfazz_size',
 			array(
 				'get_callback' => array( $this, 'get_payfazz_custom_field' ),
@@ -231,7 +241,7 @@ class Payfazz_Admin {
 	 * @since    1.0.0
 	 */
 	public function get_featured_image_src(  $object, $field_name, $request ) {
-		$image = wp_get_attachment_image_src( $object['featured_media'], 'medium' );
+		$image = wp_get_attachment_image_src( $object['featured_media'], 'payfazz-thumbnail' );
 		
 		return $image[0];
 	}
@@ -249,7 +259,8 @@ class Payfazz_Admin {
 
 		foreach ( $ids as $id ) {
 			$image = wp_get_attachment_image_src( $id, 'full' );
-			array_push( $array, $image[0] );
+
+			array_push( $array, array( 'full' => $image[0] ) );
 		}
 
 		return $array;
