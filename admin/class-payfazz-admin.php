@@ -256,6 +256,79 @@ class Payfazz_Admin {
 	}
 
 	/*
+	 * Modify columns in Payfazz list in admin area
+	 *
+	 * @since    1.0.0
+	 */
+	public function manage_payfazz_posts_columns( $columns ) {
+
+    // Remove unnecessary columns
+    unset(
+      $columns['author'],
+      $columns['comments']
+    );
+
+    // Rename title and add ID and Address
+    $columns['thumbnail'] = '';
+    $columns['_payfazz_size'] = esc_attr__( 'Size', 'plugin-name' );
+    $columns['_payfazz_ecommerce_link'] = esc_attr__( 'Link', 'plugin-name' );
+
+
+    /**
+     * Rearrange column order
+     *
+     * Now define a new order. you need to look up the column
+     * names in the HTML of the admin interface HTML of the table header.
+     *
+     *     "cb" is the "select all" checkbox.
+     *     "title" is the title column.
+     *     "date" is the date column.
+     *     "icl_translations" comes from a plugin (eg.: WPML).
+     *
+     * change the order of the names to change the order of the columns.
+     *
+     * @link http://wordpress.stackexchange.com/questions/8427/change-order-of-custom-columns-for-edit-panels
+     */
+    $customOrder = array('cb', 'thumbnail', 'title', '_payfazz_size', '_payfazz_ecommerce_link', 'date');
+
+    /**
+     * return a new column array to wordpress.
+     * order is the exactly like you set in $customOrder.
+     */
+    foreach ($customOrder as $column_name)
+        $rearranged[$column_name] = $columns[$column_name];
+
+    return $rearranged;
+
+  }
+
+  // Populate new columns in customers list in admin area
+  public function manage_posts_custom_column( $column, $post_id ) {
+
+	  // For array, not simple options
+	  // global $post;
+	  // $custom = get_post_custom();
+	  // $meta = maybe_unserialize( $custom[$this->plugin_name][0] );
+
+	  // Populate column form meta
+	  switch ($column) {
+
+      case "thumbnail":
+        echo '<a href="' . get_edit_post_link() . '">';
+        echo get_the_post_thumbnail( $post_id, array( 60, 60 ) );
+        echo '</a>';
+        break;
+      case "_payfazz_size":
+        echo get_post_meta( $post_id, $column, true );
+        break;
+      case "_payfazz_ecommerce_link":
+        echo get_post_meta( $post_id, $column, true );
+        break;
+	  }
+
+  }
+
+	/*
 	 * Disable Gutenberg editor
 	 *
 	 * @since    1.0.0
