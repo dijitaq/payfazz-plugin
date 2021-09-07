@@ -80,7 +80,7 @@ class Payfazz_Post_Types {
       'show_in_nav_menus'     => ( isset( $fields['show_in_nav_menus'] ) )      ? $fields['show_in_nav_menus']      : true,
       'show_in_rest'          => ( isset( $fields['show_in_rest'] ) )           ? $fields['show_in_rest']           : false,
       'rest_base'             => ( isset( $fields['rest_base'] ) )              ? $fields['rest_base']              : '',
-      'rest_controller_class' => ( isset( $fields['rest_controller_class'] ) )  ? $fields['rest_controller_class']  : 'WP_REST_Terms_Controller',
+      'rest_controller_class' => ( isset( $fields['rest_controller_class'] ) )  ? $fields['rest_controller_class']  : 'WP_REST_Posts_Controller',
     );
 
     if ( isset( $fields['rewrite'] ) ) {
