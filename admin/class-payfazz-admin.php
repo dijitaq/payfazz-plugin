@@ -113,7 +113,7 @@ class Payfazz_Admin {
 		$ecommerce_link = isset( $values['_payfazz_ecommerce_link'][0] ) ? $values['_payfazz_ecommerce_link'][0] : '';
 		$selected = isset( $values['_payfazz_size'][0] ) ? esc_attr( $values['_payfazz_size'][0] ) : '';
 
-		wp_nonce_field( '_payfazz_meta_box_nonce', 'meta_box_nonce' );
+		//wp_nonce_field( '_payfazz_meta_box_nonce', 'meta_box_nonce' );
 
 		$config_metabox = array (
 			'type'          => 'metabox',
@@ -324,6 +324,7 @@ class Payfazz_Admin {
       case "_payfazz_ecommerce_link":
         echo get_post_meta( $post_id, $column, true );
         break;
+
 	  }
 
   }
