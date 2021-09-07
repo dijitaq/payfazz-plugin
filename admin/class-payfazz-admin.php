@@ -168,6 +168,94 @@ class Payfazz_Admin {
 	}
 
 	/*
+	 * Register custom fields to REST API
+	 *
+	 * @since    1.0.0
+	 */
+	public function register_payfazz_custom_fields_api() {
+		register_rest_field(
+			'payfazz',
+			'_payfazz_size',
+			array(
+				'get_callback' => array( $this, 'get_payfazz_custom_field' ),
+				'update_callback' => null,
+				'schema' => null,
+			)
+		);
+
+		register_rest_field(
+			'payfazz',
+			'_payfazz_ecommerce_link',
+			array(
+				'get_callback' => array( $this, 'get_payfazz_custom_field' ),
+				'update_callback' => null,
+				'schema' => null,
+			)
+		);
+
+		register_rest_field(
+			'payfazz',
+			'_payfazz_gallery',
+			array(
+				'single' => false,
+				'type' => 'array',
+				'get_callback' => array( $this, 'get_gallery_images_src' ),
+				'update_callback' => null,
+				'show_in_rest' => array(
+					'schema' => array(
+						'single' => false,
+						'type' => 'array',
+						'items' => array(
+							'type' => 'string'
+						)
+					)
+				)
+			)
+		);
+	}
+
+	/*
+	 * Display custom fields in REST API
+	 *
+	 * text, email, select, etc.
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_payfazz_custom_field( $object, $field_name, $request ) {
+		return get_post_meta( $object['id'], $field_name, true );
+	}
+
+	/*
+	 * Display Feature image in REST API
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_featured_image_src(  $object, $field_name, $request ) {
+		$image = wp_get_attachment_image_src( $object['featured_media'], 'medium' );
+		
+		return $image[0];
+	}
+
+	/*
+	 * Display gallery images in REST API
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_gallery_images_src( $object, $field_name, $request ) {
+		$attachments = get_post_meta( $object['id'], $field_name, false );
+		$ids = explode( ",", $attachments[0] );
+
+		$array = array();
+
+		foreach ( $ids as $id ) {
+			$image = wp_get_attachment_image_src( $id, 'full' );
+			array_push( $array, $image[0] );
+		}
+
+		return $array;
+	}
+
+	/*
 	 * Disable Gutenberg editor
 	 *
 	 * @since    1.0.0

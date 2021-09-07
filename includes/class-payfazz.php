@@ -200,6 +200,9 @@ class Payfazz {
     // Add meta boxes
     $this->loader->add_action( 'admin_menu', $this->admin, 'register_meta_boxes', 0 );
 
+    // Register custom fields to REST API
+    $this->loader->add_action( 'rest_api_init', $this->admin, 'register_payfazz_custom_fields_api', 0 );
+
     // Disable Gutenberg editor for Payfazz
 		$this->loader->add_filter( 'use_block_editor_for_post_type', $this->admin, 'payfazz_disable_gutenberg', 10, 2 );
 	}
