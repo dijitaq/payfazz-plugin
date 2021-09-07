@@ -122,6 +122,11 @@ class Payfazz {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-payfazz-public.php';
 
+		/*
+		 * Exopite simple options framework class
+		*/
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/exopite-simple-options/exopite-simple-options-framework-class.php';
+
 		$this->loader = new Payfazz_Loader();
 
 	}
