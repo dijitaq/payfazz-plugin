@@ -58,6 +58,30 @@ class Payfazz {
 	protected $version;
 
 	/**
+	 * Store plugin admin class to allow public access.
+	 *
+	 * @since    1.0.0
+	 * @var object      The admin class.
+	 */
+	public $admin;
+
+	/**
+	 * Store plugin public class to allow public access.
+	 *
+	 * @since    1.0.0
+	 * @var object      The admin class.
+	 */
+	public $public;
+
+	/**
+	 * Store plugin main class to allow public access.
+	 *
+	 * @since    20180622
+	 * @var object      The main class.
+	 */
+	public $main;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -73,6 +97,8 @@ class Payfazz {
 			$this->version = '1.0.0';
 		}
 		$this->plugin_name = 'payfazz';
+
+		$this->main = $this;
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -157,10 +183,10 @@ class Payfazz {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Payfazz_Admin( $this->get_plugin_name(), $this->get_version() );
+		$this->admin = new Plugin_Name_Admin( $this->get_plugin_name(), $this->get_version(), $this->main );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $this->admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $this->admin, 'enqueue_scripts' );
 
 	}
 
@@ -173,10 +199,10 @@ class Payfazz {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Payfazz_Public( $this->get_plugin_name(), $this->get_version() );
+		$this->public = new Plugin_Name_Public( $this->get_plugin_name(), $this->get_version(), $this->main );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this->public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this->public, 'enqueue_scripts' );
 
 	}
 

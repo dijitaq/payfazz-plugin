@@ -73,10 +73,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-payfazz.php';
  *
  * @since    1.0.0
  */
-function run_payfazz() {
-
-	$plugin = new Payfazz();
-	$plugin->run();
-
-}
-run_payfazz();
+global $prefix_payfazz;
+$prefix_payfazz = new Payfazz();
+$prefix_payfazz->run();
