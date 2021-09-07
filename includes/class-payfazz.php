@@ -148,6 +148,11 @@ class Payfazz {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-payfazz-public.php';
 
+		/**
+     * Custom Post Types
+     */
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-payfazz-post_types.php';
+
 		/*
 		 * Exopite simple options framework class
 		*/
@@ -183,11 +188,20 @@ class Payfazz {
 	 */
 	private function define_admin_hooks() {
 
-		$this->admin = new Plugin_Name_Admin( $this->get_plugin_name(), $this->get_version(), $this->main );
+		$this->admin = new Payfazz_Admin( $this->get_plugin_name(), $this->get_version(), $this->main );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $this->admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $this->admin, 'enqueue_scripts' );
 
+		// Register post types
+		$plugin_post_types = new Payfazz_Post_Types();
+    $this->loader->add_action( 'init', $plugin_post_types, 'create_custom_post_type', 999 );
+
+    // Add meta boxes
+    $this->loader->add_action( 'admin_menu', $this->admin, 'register_meta_boxes', 0 );
+
+    // Disable Gutenberg editor for Payfazz
+		$this->loader->add_filter( 'use_block_editor_for_post_type', $this->admin, 'payfazz_disable_gutenberg', 10, 2 );
 	}
 
 	/**
@@ -199,7 +213,7 @@ class Payfazz {
 	 */
 	private function define_public_hooks() {
 
-		$this->public = new Plugin_Name_Public( $this->get_plugin_name(), $this->get_version(), $this->main );
+		$this->public = new Payfazz_Public( $this->get_plugin_name(), $this->get_version(), $this->main );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->public, 'enqueue_scripts' );

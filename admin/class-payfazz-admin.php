@@ -100,4 +100,80 @@ class Payfazz_Admin {
 
 	}
 
+	/**
+	 * Register meta boxes
+	 *
+	 * @since    1.0.0
+	 */
+	public function register_meta_boxes() {
+		
+		global $post;
+
+		$values = get_post_custom( $post->ID );
+		$ecommerce_link = isset( $values['_payfazz_ecommerce_link'][0] ) ? $values['_payfazz_ecommerce_link'][0] : '';
+		$selected = isset( $values['_payfazz_size'][0] ) ? esc_attr( $values['_payfazz_size'][0] ) : '';
+
+		wp_nonce_field( '_payfazz_meta_box_nonce', 'meta_box_nonce' );
+
+		$config_metabox = array (
+			'type'          => 'metabox',
+      'id'						=> 'payfazz',
+      'post_types'    => array( 'payfazz' ),
+      'context'       => 'normal',
+      'priority'      => 'low',
+      'title'         => 'Payfazz Metabox',
+      'capability'    => 'edit_posts',
+      'tabbed'        => false,
+      'multilang'     => false,
+      'options'       => 'simple', 
+			'submenu'				=> false
+		);
+
+		$fields[] = array(
+			'fields' => array(
+        array(
+	        'id'        => '_payfazz_size',
+	        'type'      => 'select',
+	        'title'     => 'Size',
+	        'options'   => array(
+            'small'   => 'Small',
+            'medium'  => 'Medium',
+            'large'  	=> 'Large',
+	        ),
+	        'default_option' => 'Select size',
+        ),
+
+				array(
+          'id'          => '_payfazz_ecommerce_link',
+          'type'        => 'text',
+          'title'       => 'Ecommerce link',
+          'before'      => null,
+          'after'       => null,
+          'class'       => 'text-class',
+          'description' => null,
+          'help'        => null,
+					'default'	  => $ecommerce_link,
+        ),
+
+				array(
+					'id'     => '_payfazz_gallery',
+					'type'   => 'gallery',
+					'title'  => 'Image gallery',
+				),
+			),
+		);
+
+		$options_panel = new Exopite_Simple_Options_Framework( $config_metabox, $fields );
+	
+	}
+
+	/*
+	 * Disable Gutenberg editor
+	 *
+	 * @since    1.0.0
+	 */
+	public function payfazz_disable_gutenberg( $current_status, $post_type ) {
+		if ( $post_type === 'payfazz' ) return false;
+		return $current_status;
+	}
 }
