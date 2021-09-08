@@ -205,6 +205,16 @@ class Payfazz_Admin {
 
 		register_rest_field(
 			'payfazz',
+			'payfazz_categories',
+			array(
+				'get_callback' => array( $this, 'get_payfazz_taxonomies' ),
+				'update_callback' => null,
+				'schema' => null,
+			)
+		);
+
+		register_rest_field(
+			'payfazz',
 			'_payfazz_gallery',
 			array(
 				'single' => false,
@@ -240,10 +250,29 @@ class Payfazz_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function get_featured_image_src(  $object, $field_name, $request ) {
-		$image = wp_get_attachment_image_src( $object['featured_media'], 'payfazz-thumbnail' );
+	public function get_featured_image_src( $object, $field_name, $request ) {
+		$image = wp_get_attachment_image_src( $object['featured_media'], 'medium' );
 		
 		return $image[0];
+	}
+
+	/*
+	 * Display Feature image in REST API
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_payfazz_taxonomies( $object, $field_name, $request ) {
+		$ids = explode( ",", $object['payfazz_categories'] );
+
+		$array = array();
+
+		foreach ( $object['payfazz_categories'] as $id ) {
+			$taxonomy = get_term( $id );
+
+			array_push( $array, array( 'name' => $taxonomy->name, 'slug' => $taxonomy->slug ) );
+		}
+
+		return $array;
 	}
 
 	/*

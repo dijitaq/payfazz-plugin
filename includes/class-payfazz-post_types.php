@@ -264,13 +264,21 @@ class Payfazz_Post_Types {
           'title',
           'editor',
           'thumbnail',
-          'revisions',
+          'page-attributes',
         ),
         'custom_caps'           => false,
         'custom_caps_users'     => null,
         'taxonomies'            => null,
         'show_in_rest'          => true,
         'rest_base'             => 'payfazz',
+        'taxonomies'            => array(
+          array(
+              'taxonomy'          => 'payfazz_categories',
+              'plural'            => 'Payfazz Categories',
+              'single'            => 'Payfazz Category',
+              'post_types'        => array( 'payfazz' ),
+          ),
+        ),
       ),
     );
 
