@@ -257,13 +257,59 @@ class Payfazz_Admin {
 	}
 
 	/*
+	 * Register get post by terms end point to REST API
+	 *
+	 * @since    1.0.0
+	 */
+	public function register_payfazz_post_by_terms_end_point() {
+		register_rest_route( 'payfazz/v1', 'similar-posts/(?P<post_id>\d+)', array(
+				'method' => 'GET',
+				'callback' => array( $this, 'get_payfazz_post_by_terms' ),
+			) );
+	}
+
+	public function get_payfazz_post_by_terms( $request ) {
+		$post_id = $request['post_id'];
+
+		$args = array(
+			'post_type' => 'payfazz',
+			'post__not_in' => array( $post_id )
+		);
+
+		$terms = get_the_terms( $post_id, 'payfazz_categories' );
+
+		if ( !is_wp_error( $terms) ) {
+			$terms = wp_list_pluck( $terms,'term_id' );
+
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'payfazz_categories',
+		      'field' => 'id',
+		      'terms' => array_values($terms)
+				)
+			);
+
+			$posts = get_posts( $args );
+	    if ( empty($posts) ) {
+	    	return new WP_Error( 'empty_category', 'there is no post in this category', array('status' => 404) );
+
+	    }
+
+	    $response = new WP_REST_Response( $posts );
+
+	    return $response;
+
+		} else {
+			return new WP_Error( 'empty_category', 'there is no post in this category', array('status' => 404) );
+		}
+	}
+
+	/*
 	 * Display Feature image in REST API
 	 *
 	 * @since    1.0.0
 	 */
 	public function get_payfazz_taxonomies( $object, $field_name, $request ) {
-		$ids = explode( ",", $object['payfazz_categories'] );
-
 		$array = array();
 
 		foreach ( $object['payfazz_categories'] as $id ) {
