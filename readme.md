@@ -2,5 +2,6 @@
 
 Wordpress plugin for Payfazz recruitment
 
-### Wordpress REST API url
-i.e: http://localhost/payfazz/wp-json/wp/v2/payfazz/
+### Installation
+- Download or clone repo into Wordpress installation
+- Activate plugin
