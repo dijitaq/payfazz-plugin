@@ -203,9 +203,6 @@ class Payfazz {
     // Register custom fields to REST API
     $this->loader->add_action( 'rest_api_init', $this->admin, 'register_payfazz_custom_fields_api', 0 );
 
-    // Register get post by terms end point to REST API
-    $this->loader->add_action( 'rest_api_init', $this->admin, 'register_payfazz_post_by_terms_end_point');
-
     // Modify columns in Payfazz list in admin area
     $this->loader->add_filter( 'manage_payfazz_posts_columns', $this->admin, 'manage_payfazz_posts_columns' );
 		$this->loader->add_action( 'manage_posts_custom_column', $this->admin, 'manage_posts_custom_column', 10, 2 );

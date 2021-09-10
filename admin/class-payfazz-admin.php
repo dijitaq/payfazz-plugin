@@ -248,21 +248,6 @@ class Payfazz_Admin {
 		return array( 'medium' => $medium[0], 'large' => $large[0]);
 	}
 
-	/*
-	 * Register get post by terms end point to REST API
-	 *
-	 * @since    1.0.0
-	 */
-	public function register_payfazz_post_by_terms_end_point() {
-		register_rest_route( 'payfazz/v2', 'similar-posts/(?P<post_id>\d+)',
-				array(
-					array(
-						'method' => 'GET',
-						'callback' => array( $this, 'get_payfazz_post_by_terms' ),
-					),
-				));
-	}
-
 	public function get_payfazz_post_by_terms( $request ) {
 		$controller = new WP_REST_Posts_Controller( $parameters['type'] );
 
