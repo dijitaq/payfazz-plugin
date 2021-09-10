@@ -175,7 +175,7 @@ class Payfazz_Admin {
 	public function register_payfazz_custom_fields_api() {
 		register_rest_field(
 			'payfazz',
-			'featured_image_src',
+			'featured_image',
 			array(
 				'get_callback' => array( $this, 'get_featured_image_src' ),
 				'update_callback' => null,
@@ -221,15 +221,6 @@ class Payfazz_Admin {
 				'type' => 'array',
 				'get_callback' => array( $this, 'get_gallery_images_src' ),
 				'update_callback' => null,
-				'show_in_rest' => array(
-					'schema' => array(
-						'single' => false,
-						'type' => 'array',
-						'items' => array(
-							'type' => 'string'
-						)
-					)
-				)
 			)
 		);
 	}
@@ -251,9 +242,10 @@ class Payfazz_Admin {
 	 * @since    1.0.0
 	 */
 	public function get_featured_image_src( $object, $field_name, $request ) {
-		$image = wp_get_attachment_image_src( $object['featured_media'], 'medium' );
+		$medium = wp_get_attachment_image_src( $object['featured_media'], 'medium' );
+		$large = wp_get_attachment_image_src( $object['featured_media'], 'large' );
 		
-		return $image[0];
+		return array( 'medium' => $medium[0], 'large' => $large[0]);
 	}
 
 	/*
@@ -262,13 +254,18 @@ class Payfazz_Admin {
 	 * @since    1.0.0
 	 */
 	public function register_payfazz_post_by_terms_end_point() {
-		register_rest_route( 'payfazz/v1', 'similar-posts/(?P<post_id>\d+)', array(
-				'method' => 'GET',
-				'callback' => array( $this, 'get_payfazz_post_by_terms' ),
-			) );
+		register_rest_route( 'payfazz/v2', 'similar-posts/(?P<post_id>\d+)',
+				array(
+					array(
+						'method' => 'GET',
+						'callback' => array( $this, 'get_payfazz_post_by_terms' ),
+					),
+				));
 	}
 
 	public function get_payfazz_post_by_terms( $request ) {
+		$controller = new WP_REST_Posts_Controller( $parameters['type'] );
+
 		$post_id = $request['post_id'];
 
 		$args = array(
@@ -289,20 +286,33 @@ class Payfazz_Admin {
 				)
 			);
 
-			$posts = get_posts( $args );
-	    if ( empty($posts) ) {
-	    	return new WP_Error( 'empty_category', 'there is no post in this category', array('status' => 404) );
+			$query = new WP_Query( $args );
 
+	    if ( empty( $query ) ) {
+	    	return new WP_Error( 'empty_category', 'there is no post in this category', array('status' => 404) );
 	    }
 
-	    $response = new WP_REST_Response( $posts );
+	    $posts = $query->posts;
+	    $data = array();
 
-	    return $response;
+	    foreach($posts as $post) {
+	    	$itemdata = $controller->prepare_item_for_response( $post, $request );
+      	$data[] = $controller->prepare_response_for_collection( $itemdata );
+	    }
+
+	    //$response = new WP_REST_Response( $posts );
+
+	    //return $response;
+	    return new WP_REST_Response( $posts, 200 );
 
 		} else {
 			return new WP_Error( 'empty_category', 'there is no post in this category', array('status' => 404) );
 		}
 	}
+
+  public function prepare_item_for_response( $item, $request ) {
+    return array();
+  }
 
 	/*
 	 * Display Feature image in REST API
@@ -315,7 +325,7 @@ class Payfazz_Admin {
 		foreach ( $object['payfazz_categories'] as $id ) {
 			$taxonomy = get_term( $id );
 
-			array_push( $array, array( 'name' => $taxonomy->name, 'slug' => $taxonomy->slug ) );
+			array_push( $array, array( 'id' => $id, 'name' => $taxonomy->name, 'slug' => $taxonomy->slug ) );
 		}
 
 		return $array;
@@ -329,13 +339,13 @@ class Payfazz_Admin {
 	public function get_gallery_images_src( $object, $field_name, $request ) {
 		$attachments = get_post_meta( $object['id'], $field_name, false );
 		$ids = explode( ",", $attachments[0] );
-
 		$array = array();
 
 		foreach ( $ids as $id ) {
-			$image = wp_get_attachment_image_src( $id, 'full' );
+			$thumb = wp_get_attachment_image_src( $id, 'medium' );
+			$full = wp_get_attachment_image_src( $id, 'full' );
 
-			array_push( $array, array( 'full' => $image[0] ) );
+			array_push( $array, array( 'thumb' => $thumb[0], 'full' => $full[0] ) );
 		}
 
 		return $array;
